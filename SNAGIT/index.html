@@ -41,6 +41,9 @@ var stars;
 var score = 0;
 var scoreText;
 
+var productID = 0;
+var selectedProducts = [];
+
 function create() {
 
     //  We're going to be using physics, so enable the Arcade Physics system
@@ -64,13 +67,6 @@ function create() {
     //  This stops it from falling away when you jump on it
     ground.body.immovable = true;
 
-    //  Now let's create two ledges
-    //var ledge = platforms.create(400, 400, 'ground');
-    //ledge.body.immovable = true;
-
-    //ledge = platforms.create(-150, 250, 'ground');
-    //ledge.body.immovable = true;
-
     // The player and its settings
     player = game.add.sprite(32, game.world.height - 150, 'dude');
 
@@ -92,26 +88,13 @@ function create() {
     //  We will enable physics for any star that is created in this group
     stars.enableBody = true;
 
-    //  Here we'll create 3 of them evenly spaced apart
-    for (var i = 0; i < 3; i++)
-    {
-        
-        //  Create a star inside of the 'stars' group
-        var star = stars.create(i * 270, 0, 'star');
-
-        //  Let gravity do its thing
-        star.body.gravity.y = 400;
-        
-        star.name = "Hello" + i;
-       
-    }
+    game.time.events.repeat(Phaser.Timer.SECOND * 2, 10, createStars, this);
 
     //  The score
     scoreText = game.add.text(16, 16, 'score: 0', { fontSize: '32px', fill: '#000' });
 
     //  Our controls.
-    cursors = game.input.keyboard.createCursorKeys();
-    
+    cursors = game.input.keyboard.createCursorKeys(); 
 }
 
 function update() {
@@ -165,8 +148,8 @@ function collectStar (player, star) {
     
     //  Add and update the score
     score += 1;
-    scoreText.text = 'Score: ' + score + name;
-
+    scoreText.text = 'Score: ' + score + "   " + name;
+    selectedProducts.push(name);
 }
 
 function killStar (star, platform) {
@@ -175,6 +158,16 @@ function killStar (star, platform) {
     star.kill();
 }
 
+function createStars() {
+
+     //  Create a star inside of the 'stars' group
+    var star = stars.create(game.rnd.integerInRange(10, 550), 0, 'star');
+
+    //  Let gravity do its thing
+    star.body.gravity.y = 100;
+    star.name = productID;
+    productID = productID + 1;
+}
 </script>
 
 </body>
