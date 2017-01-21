@@ -30,16 +30,48 @@ function preload() {
     game.load.image('product8', 'assets/product8.png');
     game.load.image('product9', 'assets/product9.png');
     game.load.spritesheet('dude', 'assets/dude.png', 32, 48);
+    
+    game.load.spritesheet('dudeLove', 'assets/dude1.png', 32, 48);
+    game.load.spritesheet('dudeLike', 'assets/dude1.png', 32, 48);
+    game.load.spritesheet('dudeNeutral', 'assets/dude1.png', 32, 48);
+    game.load.spritesheet('dudeHate', 'assets/dude1.png', 32, 48);
 
+    
+    game.load.image('love', 'assets/diamond.png');
+    game.load.image('like', 'assets/like.png');
+    game.load.image('neutral', 'assets/neutral.png');
+    game.load.image('hate', 'assets/hate.png');
 }
 
 var player;
 var platforms;
 var cursors;
 
-var stars;
+var products;
 var score = 0;
 var scoreText;
+var commentsText;
+
+var productID = 0;
+var commentID = 0;
+// 0 : love
+// 1: like
+// 2: neutral
+// 3 : hate
+var lovedProducts = [];
+var likedProducts = [];
+var neutralProducts = [];
+var hateProducts = [];
+
+var loveIt;
+var likeIt;
+var neutralIt;
+var hateIt;
+
+var loveItKey;
+var likeItKey;
+var neutralKey;
+var hateItKey;
 
 function create() {
 
@@ -64,13 +96,6 @@ function create() {
     //  This stops it from falling away when you jump on it
     ground.body.immovable = true;
 
-    //  Now let's create two ledges
-    //var ledge = platforms.create(400, 400, 'ground');
-    //ledge.body.immovable = true;
-
-    //ledge = platforms.create(-150, 250, 'ground');
-    //ledge.body.immovable = true;
-
     // The player and its settings
     player = game.add.sprite(32, game.world.height - 150, 'dude');
 
@@ -86,42 +111,55 @@ function create() {
     player.animations.add('left', [0, 1, 2, 3], 10, true);
     player.animations.add('right', [5, 6, 7, 8], 10, true);
 
-    //  Finally some stars to collect
-    stars = game.add.group();
+    //  Finally some products to collect
+    products = game.add.group();
 
-    //  We will enable physics for any star that is created in this group
-    stars.enableBody = true;
+    //  We will enable physics for any product that is created in this group
+    products.enableBody = true;
 
-    //  Here we'll create 3 of them evenly spaced apart
-    for (var i = 0; i < 3; i++)
-    {
-        //  Create a star inside of the 'stars' group
-        var star = stars.create(i * 70, 0, 'star');
-
-        //  Let gravity do its thing
-        star.body.gravity.y = 300;
-
-        //  This just gives each star a slightly random bounce value
-        star.body.bounce.y = 0.7 + Math.random() * 0.2;
-    }
+    game.time.events.repeat(Phaser.Timer.SECOND * 2, 10, createStars, this);
 
     //  The score
     scoreText = game.add.text(16, 16, 'score: 0', { fontSize: '32px', fill: '#000' });
-
+    commentsText = game.add.text(500, 16, 'comments', { fontSize: '32px', fill: '#000' });
     //  Our controls.
-    cursors = game.input.keyboard.createCursorKeys();
+    cursors = game.input.keyboard.createCursorKeys(); 
+    
+    // Buttons at the bottom
+    var temp = (game.world.width)/6
+    loveIt = game.add.sprite(temp, game.world.height - 50, 'love');
+    likeIt = game.add.sprite(2*temp, game.world.height - 50, 'like');
+    neutralIt = game.add.sprite( 3 * temp, game.world.height - 50, 'neutral');
+    hateIt = game.add.sprite(4 * temp, game.world.height - 50, 'hate');
+    
+    loveIt.inputEnabled = true;
+    likeIt.inputEnabled = true;
+    neutralIt.inputEnabled = true;
+    hateIt.inputEnabled = true;
+    
+    loveIt.events.onInputDown.add(listenerLoveIt, this);
+    likeIt.events.onInputDown.add(listenerLikeIt, this);
+    neutralIt.events.onInputDown.add(listenerNeutralIt, this);
+    hateIt.events.onInputDown.add(listenerHateIt, this);
+    
+    loveItKey = game.input.keyboard.addKey(Phaser.Keyboard.W);
+    likeItKey = game.input.keyboard.addKey(Phaser.Keyboard.A);
+    neutralKey = game.input.keyboard.addKey(Phaser.Keyboard.S);
+    hateItKey = game.input.keyboard.addKey(Phaser.Keyboard.D);
+    
+    
     
 }
 
 function update() {
 
-    //  Collide the player and the stars with the platforms
+    //  Collide the player and the products with the platforms
     game.physics.arcade.collide(player, platforms);
-    game.physics.arcade.collide(stars, platforms);
+    game.physics.arcade.collide(products, platforms, killProduct, null, this);
 
-    //  Checks to see if the player overlaps with any of the stars, if he does call the collectStar function
-    game.physics.arcade.overlap(player, stars, collectStar, null, this);
-
+    //  Checks to see if the player overlaps with any of the products, if he does call the collectProduct function
+    game.physics.arcade.overlap(player, products, collectProduct, null, this);
+    
     //  Reset the players velocity (movement)
     player.body.velocity.x = 0;
 
@@ -152,18 +190,98 @@ function update() {
     {
         player.body.velocity.y = -350;
     }
-
+    if ( loveItKey.justPressed() ){    
+       listenerLoveIt();
+    }
+    if ( likeItKey.justPressed() ){    
+       listenerLikeIt();
+    }
+    if ( neutralKey.justPressed() ){    
+       listenerNeutralIt();
+    }
+    if ( hateItKey.justPressed() ){    
+       listenerHateIt();
+    }
 }
 
-function collectStar (player, star) {
+function collectProduct (player, product) {
+    var name = product.name;
+    // Removes the product from the screen
+    product.kill();
     
-    // Removes the star from the screen
-    star.kill();
-
     //  Add and update the score
     score += 1;
-    scoreText.text = 'Score: ' + score;
+    scoreText.text = 'Score: ' + score + "   " + name;
+    if (commentID  == 0)
+    {
+        lovedProducts.push(name);
+        commentsText.text = commentsText.text  + "Love : " + name + "\n";
+    }
+    else if (commentID == 1)
+    {
+        likedProducts.push(name);
+        commentsText.text = commentsText.text  + "Like : " + name + "\n";
+    }
+    else if (commentID == 2)
+    {
+        neutralProducts.push(name);
+        commentsText.text = commentsText.text  + "Neutral : " + name + "\n";
+    }
+    else{
+        hateProducts.push(name);
+        commentsText.text = commentsText.text  + "Hate : " + name + "\n";
+    } 
+}
 
+function killProduct (product, platform) {
+    
+    // Removes the product from the screen
+    product.kill();
+}
+
+function createStars() {
+
+     //  Create a product inside of the 'products' group
+    var product = products.create(game.rnd.integerInRange(10, 550), 0, 'product');
+
+    //  Let gravity do its thing
+    product.body.gravity.y = 100;
+    product.name = productID;
+    productID = productID + 1;
+}
+
+function listenerLoveIt() {
+scoreText.text = 'love' ;
+player.loadTexture('dudeLove', 0 , false);
+player.animations.add('left', [0, 1, 2, 3], 10, true);
+player.animations.add('right', [5, 6, 7, 8], 10, true);
+commentID = 0;
+}
+
+function listenerLikeIt() {
+
+scoreText.text = 'like' ;
+player.loadTexture('dudeLike', 0 , false);
+player.animations.add('left', [0, 1, 2, 3], 10, true);
+player.animations.add('right', [5, 6, 7, 8], 10, true);
+commentID = 1;
+}
+
+function listenerNeutralIt() {
+
+scoreText.text = 'neutral' ;
+player.loadTexture('dudeNeutral', 0 , false);
+player.animations.add('left', [0, 1, 2, 3], 10, true);
+player.animations.add('right', [5, 6, 7, 8], 10, true);
+commentID = 2;
+}
+
+function listenerHateIt() {
+scoreText.text = 'hate' ;
+player.loadTexture('dudeHate', 0 , false);
+player.animations.add('left', [0, 1, 2, 3], 10, true);
+player.animations.add('right', [5, 6, 7, 8], 10, true);
+commentID = 3;
 }
 
 </script>
