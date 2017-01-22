@@ -183,6 +183,7 @@ var hateCount;
 var trophySprite;
 var trophyText;
 
+var heading;
 var howToPlayText;
 var timer;
 
@@ -209,7 +210,7 @@ function create() {
     ground.body.immovable = true;
 
     // The player and its settings
-    player = game.add.sprite(62, game.world.height - 128, 'dude');
+    player = game.add.sprite(400, game.world.height - 128, 'dude');
 
     //  We need to enable physics on the player
     game.physics.arcade.enable(player);
@@ -229,7 +230,7 @@ function create() {
     //  We will enable physics for any product that is created in this group
     products.enableBody = true;
 
-    game.time.events.repeat(Phaser.Timer.SECOND * 4, 15, createStars, this);
+    game.time.events.repeat(Phaser.Timer.SECOND * 4, 16, createStars, this);
 
     // add trophy
     trophySprite = game.add.sprite(1130, 40, 'trophy');
@@ -250,11 +251,24 @@ function create() {
     trophyText.fill = '#ff0000';
     trophyText.visible = false;
     
+    //heading
+    heading = game.add.text(game.world.width/6,game.world.height/8 , 'Welcome to SnagIt!', { fontSize: '32px', fill: '#000' });
+    //	Font style
+    heading.font = 'Arial Black';
+    heading.fontSize = 50;
+    heading.fontWeight = 'bold';
+
+    //	Stroke color and thickness
+    heading.stroke = '#000000';
+    heading.strokeThickness = 6;
+    heading.fill = '#ff0000';
+    heading.visible = true;
+    
     // How TO Play Text
-    howToPlayText = game.add.text(game.world.width/4,game.world.height/4 , ' Left: To move cart left \n Right: To move cart right \n W: Love It \n A: Like It \n S: Neutral \n D: Hate It', { fontSize: '32px', fill: '#000' });
+    howToPlayText = game.add.text(game.world.width/4,game.world.height/4 , 'Left: To move cart left \n Right: To move cart right \n W: Love It \n A: Like It \n S: Neutral \n D: Hate It', { fontSize: '32px', fill: '#000' });
     //	Font style
     howToPlayText.font = 'Arial Black';
-    howToPlayText.fontSize = 35;
+    howToPlayText.fontSize = 30;
     howToPlayText.fontWeight = 'bold';
 
     //	Stroke color and thickness
@@ -342,8 +356,6 @@ function create() {
     hateCount.font = 'Arial Black';
     hateCount.fontSize = 35;
     hateCount.fontWeight = 'bold';
-    
-    
     }
 
 function update() {
@@ -376,7 +388,6 @@ function update() {
     {
         //  Stand still
         player.animations.stop();
-
         player.frame = 4;
     }
     
@@ -424,17 +435,18 @@ function collectProduct (player, product) {
         neutralCount.text = neutralProducts.length;
         neutralCount = neutralProducts.length;
     }
-    else{
+    else
+    {
         hateProducts.push(name);
         hateCount.text = hateProducts.length;
         hateItemsCount = hateProducts.length;
     } 
 
     // Overlay popup when user fills cart
-  var itemTitles = ["Relic Evie Crossbody Bag", "Rosetti Crossbody Bag", "LC Lauren Conrad Ring Convertible Crossbody Bag", "Rosetti This N' That Crossbody Bag", "Apt. 9® Zoe Laser-Cut Convertible Dome Satchel", "Apt. 9® Zoe Pocket Crossbody Bag", "Tig II by Tignanello Emily Crossbody Bag", "Donna Sharp Hipster Montreal Quilted Patchwork Crossbody Bag", "REED Atlantique Convertible Mini Satchel", "Unionbay Geometric Studded Crossbody Bag", "Deluxity Annette Crossbody Bag", "T-Shirt & Jeans Patchwork Saddle Crossbody Bag", "Olivia Miller Neilla Tassel Saddle Crossbody Bag", "Candie's® Sabrina Crossbody Saddle Bag", "Rosetti Double-Time Straw Crossbody Bag "];
-  var itemDescriptions = ["This Relic crossbody bag is the perfect size for all your daily essentials.", "Give your look a touch of floral flair with this Rosetti crossbody bag.", "Showcase your sleek sense of style with this LC Lauren Conrad crossbody bag.", "Give your look a sporty touch with this Rosetti crossbody bag.", "This Apt. 9 domed satchel features laser-cut accents for a fashionable look.", "The ultimate bag for all your day-to-day outings, this Apt. 9 crossbody bag offer style and class.", "Keep your fashion up to date with this Tig II by Tignanello handbag","This Donna Sharp crossbody bag is perfect for all your day-to-day tasks. The quilted patchwork design lends a unique look. Transform any look with this edgy, trendy and fashionable bag.", "Give your full attention to this REED mini satchel for easy accessorizing.", "This trendy studded crossbody bag from Unionbay has room for all your daily essentials.", "This stylish crossbody by Deluxity features an eye-catching gold-tone medallion.","Carry your phone, lip balm and cash in this T-Shirt & Jeans saddle crossbody bag.", "Stay up to date with the trends carrying this Olivia Miller saddle bag.","This compact Candie's saddle bag offers hands-free style for your cash, keys and phone.","Give yourself a fashion-forward look with this Rosetti crossbody bag."];
+    var itemTitles = ["Relic Evie Crossbody Bag", "Rosetti Crossbody Bag", "LC Lauren Conrad Ring Convertible Crossbody Bag", "Rosetti This N' That Crossbody Bag", "Apt. 9® Zoe Laser-Cut Convertible Dome Satchel", "Apt. 9® Zoe Pocket Crossbody Bag", "Tig II by Tignanello Emily Crossbody Bag", "Donna Sharp Hipster Montreal Quilted Patchwork Crossbody Bag", "REED Atlantique Convertible Mini Satchel", "Unionbay Geometric Studded Crossbody Bag", "Deluxity Annette Crossbody Bag", "T-Shirt & Jeans Patchwork Saddle Crossbody Bag", "Olivia Miller Neilla Tassel Saddle Crossbody Bag", "Candie's® Sabrina Crossbody Saddle Bag", "Rosetti Double-Time Straw Crossbody Bag "];
+    var itemDescriptions = ["This Relic crossbody bag is the perfect size for all your daily essentials.", "Give your look a touch of floral flair with this Rosetti crossbody bag.", "Showcase your sleek sense of style with this LC Lauren Conrad crossbody bag.", "Give your look a sporty touch with this Rosetti crossbody bag.", "This Apt. 9 domed satchel features laser-cut accents for a fashionable look.", "The ultimate bag for all your day-to-day outings, this Apt. 9 crossbody bag offer style and class.", "Keep your fashion up to date with this Tig II by Tignanello handbag","This Donna Sharp crossbody bag is perfect for all your day-to-day tasks. The quilted patchwork design lends a unique look. Transform any look with this edgy, trendy and fashionable bag.", "Give your full attention to this REED mini satchel for easy accessorizing.", "This trendy studded crossbody bag from Unionbay has room for all your daily essentials.", "This stylish crossbody by Deluxity features an eye-catching gold-tone medallion.","Carry your phone, lip balm and cash in this T-Shirt & Jeans saddle crossbody bag.", "Stay up to date with the trends carrying this Olivia Miller saddle bag.","This compact Candie's saddle bag offers hands-free style for your cash, keys and phone.","Give yourself a fashion-forward look with this Rosetti crossbody bag."];
 
-    if (lovedProducts.length === 4 || lovedProducts.length === 4 || neutralProducts.length === 4){
+    if (lovedProducts.length === 4 || likedProducts.length === 4 || neutralProducts.length === 4){
       game.paused = true;
       $('#resultsModal').show();
       var combinedArray = lovedProducts.concat(neutralProducts)
@@ -455,7 +467,12 @@ function killProduct (product, platform) {
 }
 
 function createStars() {
-
+    if (productID == 15)
+    {
+        trophySprite.visible = true;
+        trophyText.visible = true;
+        return;
+    }
      //  Create a product inside of the 'products' group
     var productName = 'product' + productID
     var product = products.create(game.rnd.integerInRange(10, 550), 0, productName);
@@ -505,6 +522,7 @@ commentID = 3;
 function removeHowToText()
 {
     howToPlayText.visible = false;
+    heading.visible = false;
 }
 </script>
 
