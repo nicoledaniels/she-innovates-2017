@@ -14,21 +14,27 @@
 
 <script type="text/javascript">
 
-var game = new Phaser.Game(800, 600, Phaser.AUTO, '', { preload: preload, create: create, update: update });
+var game = new Phaser.Game(1000, 666, Phaser.AUTO, '', { preload: preload, create: create, update: update });
 
 function preload() {
 
-    game.load.image('sky', 'assets/sky.png');
-    game.load.image('ground', 'assets/platform.png');
-    game.load.image('product1', 'assets/product1.png');
-    game.load.image('product2', 'assets/product2.png');
-    game.load.image('product3', 'assets/product3.png');
-    game.load.image('product4', 'assets/product4.png');
-    game.load.image('product5', 'assets/product5.png');
-    game.load.image('product6', 'assets/product6.png');
-    game.load.image('product7', 'assets/product7.png');
-    game.load.image('product8', 'assets/product8.png');
-    game.load.image('product9', 'assets/product9.png');
+    game.load.image('sky', 'assets/background.png');
+    game.load.image('ground', 'assets/baseline.png');
+    game.load.image('product1', 'assets/1.png');
+    game.load.image('product2', 'assets/2.png');
+    game.load.image('product3', 'assets/3.png');
+    game.load.image('product4', 'assets/4.png');
+    game.load.image('product5', 'assets/5.png');
+    game.load.image('product6', 'assets/6.png');
+    game.load.image('product7', 'assets/7.png');
+    game.load.image('product8', 'assets/8.png');
+    game.load.image('product9', 'assets/9.png');
+    game.load.image('product10', 'assets/10.png');
+    game.load.image('product11', 'assets/11.png');
+    game.load.image('product12', 'assets/12.png');
+    game.load.image('product13', 'assets/13.png');
+    game.load.image('product14', 'assets/14.png');
+    game.load.image('product15', 'assets/15.png');
     game.load.spritesheet('dude', 'assets/dude.png', 32, 48);
     
     game.load.spritesheet('dudeLove', 'assets/dude1.png', 32, 48);
@@ -52,7 +58,7 @@ var score = 0;
 var scoreText;
 var commentsText;
 
-var productID = 0;
+var productID = 1;
 var commentID = 0;
 // 0 : love
 // 1: like
@@ -73,6 +79,11 @@ var likeItKey;
 var neutralKey;
 var hateItKey;
 
+var loveCount;
+var likeCount;
+var neutralCount;
+var hateCount;
+
 function create() {
 
     //  We're going to be using physics, so enable the Arcade Physics system
@@ -88,16 +99,16 @@ function create() {
     platforms.enableBody = true;
 
     // Here we create the ground.
-    var ground = platforms.create(0, game.world.height - 64, 'ground');
+    var ground = platforms.create(0, game.world.height - 125, 'ground');
 
     //  Scale it to fit the width of the game (the original sprite is 400x32 in size)
-    ground.scale.setTo(2, 2);
+    //ground.scale.setTo(2, 2);
 
     //  This stops it from falling away when you jump on it
     ground.body.immovable = true;
 
     // The player and its settings
-    player = game.add.sprite(32, game.world.height - 150, 'dude');
+    player = game.add.sprite(32, game.world.height - 250, 'dude');
 
     //  We need to enable physics on the player
     game.physics.arcade.enable(player);
@@ -117,7 +128,7 @@ function create() {
     //  We will enable physics for any product that is created in this group
     products.enableBody = true;
 
-    game.time.events.repeat(Phaser.Timer.SECOND * 2, 10, createStars, this);
+    game.time.events.repeat(Phaser.Timer.SECOND * 2, 15, createStars, this);
 
     //  The score
     scoreText = game.add.text(16, 16, 'score: 0', { fontSize: '32px', fill: '#000' });
@@ -147,8 +158,10 @@ function create() {
     neutralKey = game.input.keyboard.addKey(Phaser.Keyboard.S);
     hateItKey = game.input.keyboard.addKey(Phaser.Keyboard.D);
     
-    
-    
+    loveCount = game.add.text(500, 16, '', { fontSize: '32px', fill: '#000' });
+    likeCount = game.add.text(500, 16, '', { fontSize: '32px', fill: '#000' });
+    neutralCount = game.add.text(500, 16, '', { fontSize: '32px', fill: '#000' });
+    hateCount = game.add.text(500, 16, '', { fontSize: '32px', fill: '#000' });
 }
 
 function update() {
@@ -215,21 +228,21 @@ function collectProduct (player, product) {
     if (commentID  == 0)
     {
         lovedProducts.push(name);
-        commentsText.text = commentsText.text  + "Love : " + name + "\n";
+        loveCount.text = lovedProducts.length;
     }
     else if (commentID == 1)
     {
         likedProducts.push(name);
-        commentsText.text = commentsText.text  + "Like : " + name + "\n";
+        likeCount.text = likedProducts.length;
     }
     else if (commentID == 2)
     {
         neutralProducts.push(name);
-        commentsText.text = commentsText.text  + "Neutral : " + name + "\n";
+        neutralCount.text = neutralProducts.length;
     }
     else{
         hateProducts.push(name);
-        commentsText.text = commentsText.text  + "Hate : " + name + "\n";
+        hateCount.text = hateProducts.length;
     } 
 }
 
@@ -242,7 +255,8 @@ function killProduct (product, platform) {
 function createStars() {
 
      //  Create a product inside of the 'products' group
-    var product = products.create(game.rnd.integerInRange(10, 550), 0, 'product');
+    var productName = 'product' + productID
+    var product = products.create(game.rnd.integerInRange(10, 550), 0, productName);
 
     //  Let gravity do its thing
     product.body.gravity.y = 100;
@@ -268,7 +282,6 @@ commentID = 1;
 }
 
 function listenerNeutralIt() {
-
 scoreText.text = 'neutral' ;
 player.loadTexture('dudeNeutral', 0 , false);
 player.animations.add('left', [0, 1, 2, 3], 10, true);
