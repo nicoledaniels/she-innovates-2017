@@ -31,7 +31,7 @@
       <div class="modal-body">
         <div class="row">
           <div class="col-md-4">
-            <img src="http://www.bagzone.co.uk/shop/s139-black-side.jpg" height="100" width="100" class="img-responsive center-block" />
+            <img src="http://www.bagzone.co.uk/shop/s139-black-side.jpg" height="100" width="100" class="item-image img-responsive center-block" />
           </div>
           <h3 class="item-title"> Gucci Bag </h3>
           <h4 class="item-description"> “This Relic crossbody bag is the perfect size for all your daily essentials.” </h4>
@@ -60,7 +60,7 @@
         </div>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-default close-button" data-dismiss="modal">Close</button>
+        <button type="button" class="next-button">Next</button>
       </div>
     </div>
   </div>
@@ -69,13 +69,40 @@
 <script type="text/javascript">
 
 $(document).ready(function() {
-  var itemTitles = ["Relic Evie Crossbody Bag", "Rosetti Crossbody Bag", "LC Lauren Conrad Ring Convertible Crossbody Bag", "Rosetti This N' That t Crossbody Bag", "Apt. 9® Zoe Laser-Cut Convertible Dome Satchel", "Apt. 9® Zoe Pocket Crossbody Bag", "Tig II by Tignanello Emily Crossbody Bag", "Donna Sharp Hipster Montreal Quilted Patchwork Crossbody Bag", "REED Atlantique Convertible Mini Satchel", "Unionbay Geometric Studded Crossbody Bag", "Deluxity Annette Crossbody Bag", "T-Shirt & Jeans Patchwork Saddle Crossbody Bag", "Olivia Miller Neilla Tassel Saddle Crossbody Bag", "Candie's® Sabrina Crossbody Saddle Bag", "Rosetti Double-Time Straw Crossbody Bag "];
+  var item = 1;
+  var itemTitles = ["Relic Evie Crossbody Bag", "Rosetti Crossbody Bag", "LC Lauren Conrad Ring Convertible Crossbody Bag", "Rosetti This N' That Crossbody Bag", "Apt. 9® Zoe Laser-Cut Convertible Dome Satchel", "Apt. 9® Zoe Pocket Crossbody Bag", "Tig II by Tignanello Emily Crossbody Bag", "Donna Sharp Hipster Montreal Quilted Patchwork Crossbody Bag", "REED Atlantique Convertible Mini Satchel", "Unionbay Geometric Studded Crossbody Bag", "Deluxity Annette Crossbody Bag", "T-Shirt & Jeans Patchwork Saddle Crossbody Bag", "Olivia Miller Neilla Tassel Saddle Crossbody Bag", "Candie's® Sabrina Crossbody Saddle Bag", "Rosetti Double-Time Straw Crossbody Bag "];
   var itemDescriptions = ["This Relic crossbody bag is the perfect size for all your daily essentials.", "Give your look a touch of floral flair with this Rosetti crossbody bag.", "Showcase your sleek sense of style with this LC Lauren Conrad crossbody bag.", "Give your look a sporty touch with this Rosetti crossbody bag.", "This Apt. 9 domed satchel features laser-cut accents for a fashionable look.", "The ultimate bag for all your day-to-day outings, this Apt. 9 crossbody bag offer style and class.", "Keep your fashion up to date with this Tig II by Tignanello handbag","This Donna Sharp crossbody bag is perfect for all your day-to-day tasks. The quilted patchwork design lends a unique look. Transform any look with this edgy, trendy and fashionable bag.", "Give your full attention to this REED mini satchel for easy accessorizing.", "This trendy studded crossbody bag from Unionbay has room for all your daily essentials.", "This stylish crossbody by Deluxity features an eye-catching gold-tone medallion.","Carry your phone, lip balm and cash in this T-Shirt & Jeans saddle crossbody bag.", "Stay up to date with the trends carrying this Olivia Miller saddle bag.","This compact Candie's saddle bag offers hands-free style for your cash, keys and phone.","Give yourself a fashion-forward look with this Rosetti crossbody bag."];
 
-  $('#resultsModal').hide();
+  //$('#resultsModal').hide();
   $('.close-button').on("click", function(){
     $('#resultsModal').hide();
   });
+
+  $('.next-button').on("click", function(){
+    var combinedArray = lovedProducts.concat(neutralProducts)
+    var superCombined = combinedArray.concat(likedProducts);
+    if(item === superCombined.length){
+      $('#resultsModal').hide();
+      game.paused = false; 
+      lovedProducts = [];
+      neutralProducts = [];
+      likedProducts = [];
+      superCombined = [];
+      item = 1;
+    }
+    else if(item < superCombined.length){
+      var description = $(".item-description");
+      var title = $(".item-title");
+      var image = $(".item-image");
+      title.replaceWith("<h3 class=\"item-title\">" + itemTitles[superCombined[item]] + "</h3>");
+      description.replaceWith("<h4 class=\"item-description\">" + itemDescriptions[superCombined[item]]  + "</h4>");
+      image.replaceWith("<img src=\"../SNAGIT/assets/" + superCombined[item] + ".png\"" + "height=\"100\" width=\"100\" class=\"item-image img-responsive center-block\" />");
+      item++;
+    }
+    
+  });
+
+
 });
 
 var game = new Phaser.Game(800, 600, Phaser.AUTO, '', { preload: preload, create: create, update: update });
@@ -309,8 +336,20 @@ function collectProduct (player, product) {
     } 
 
     // Overlay popup when user fills cart
-    if (score === 1){
+  var itemTitles = ["Relic Evie Crossbody Bag", "Rosetti Crossbody Bag", "LC Lauren Conrad Ring Convertible Crossbody Bag", "Rosetti This N' That Crossbody Bag", "Apt. 9® Zoe Laser-Cut Convertible Dome Satchel", "Apt. 9® Zoe Pocket Crossbody Bag", "Tig II by Tignanello Emily Crossbody Bag", "Donna Sharp Hipster Montreal Quilted Patchwork Crossbody Bag", "REED Atlantique Convertible Mini Satchel", "Unionbay Geometric Studded Crossbody Bag", "Deluxity Annette Crossbody Bag", "T-Shirt & Jeans Patchwork Saddle Crossbody Bag", "Olivia Miller Neilla Tassel Saddle Crossbody Bag", "Candie's® Sabrina Crossbody Saddle Bag", "Rosetti Double-Time Straw Crossbody Bag "];
+  var itemDescriptions = ["This Relic crossbody bag is the perfect size for all your daily essentials.", "Give your look a touch of floral flair with this Rosetti crossbody bag.", "Showcase your sleek sense of style with this LC Lauren Conrad crossbody bag.", "Give your look a sporty touch with this Rosetti crossbody bag.", "This Apt. 9 domed satchel features laser-cut accents for a fashionable look.", "The ultimate bag for all your day-to-day outings, this Apt. 9 crossbody bag offer style and class.", "Keep your fashion up to date with this Tig II by Tignanello handbag","This Donna Sharp crossbody bag is perfect for all your day-to-day tasks. The quilted patchwork design lends a unique look. Transform any look with this edgy, trendy and fashionable bag.", "Give your full attention to this REED mini satchel for easy accessorizing.", "This trendy studded crossbody bag from Unionbay has room for all your daily essentials.", "This stylish crossbody by Deluxity features an eye-catching gold-tone medallion.","Carry your phone, lip balm and cash in this T-Shirt & Jeans saddle crossbody bag.", "Stay up to date with the trends carrying this Olivia Miller saddle bag.","This compact Candie's saddle bag offers hands-free style for your cash, keys and phone.","Give yourself a fashion-forward look with this Rosetti crossbody bag."];
+
+    if (lovedProducts.length === 4 || lovedProducts.length === 4 || neutralProducts.length === 4){
+      game.paused = true;
       $('#resultsModal').show();
+      var combinedArray = lovedProducts.concat(neutralProducts)
+      var superCombined = combinedArray.concat(likedProducts);
+      var description = $(".item-description");
+      var title = $(".item-title");
+      var image = $(".item-image");
+      title.replaceWith("<h3 class=\"item-title\">" + itemTitles[superCombined[0]] + "</h3>");
+      description.replaceWith("<h4 class=\"item-description\">" + itemDescriptions[superCombined[0]]  + "</h4>");
+      image.replaceWith("<img src=\"../SNAGIT/assets/" + superCombined[0] + ".png\"" + "height=\"100\" width=\"100\" class=\"item-image img-responsive center-block\" />");
     }
 }
 
