@@ -126,7 +126,7 @@ function preload() {
     game.load.image('product12', 'assets/12.png');
     game.load.image('product13', 'assets/13.png');
     game.load.image('product14', 'assets/14.png');
-    game.load.spritesheet('dude', 'assets/shoppingcart.png', 168, 164);
+    game.load.spritesheet('dude', 'assets/love_cart.png', 168, 164);
     
     game.load.spritesheet('dudeLove', 'assets/love_cart.png', 168, 164);
     game.load.spritesheet('dudeLike', 'assets/like_cart.png', 168, 164);
@@ -138,6 +138,8 @@ function preload() {
     game.load.image('like', 'assets/like.png');
     game.load.image('neutral', 'assets/meh.png');
     game.load.image('hate', 'assets/hate.png');
+    
+    game.load.image('trophy', 'assets/trophy.png');
 }
 
 var player;
@@ -158,6 +160,11 @@ var likedProducts = [];
 var neutralProducts = [];
 var hateProducts = [];
 
+var lovedItemsCount = 0;
+var likedItemsCount = 0;
+var neutralItemsCount = 0;
+var hateItemsCount = 0
+
 var loveIt;
 var likeIt;
 var neutralIt;
@@ -172,6 +179,12 @@ var loveCount;
 var likeCount;
 var neutralCount;
 var hateCount;
+
+var trophySprite;
+var trophyText;
+
+var howToPlayText;
+var timer;
 
 function create() {
 
@@ -218,6 +231,48 @@ function create() {
 
     game.time.events.repeat(Phaser.Timer.SECOND * 4, 15, createStars, this);
 
+    // add trophy
+    trophySprite = game.add.sprite(1130, 40, 'trophy');
+    game.physics.arcade.enable(trophySprite);
+    trophySprite.enableBody = true;
+    trophySprite.body.immovable = true;
+    trophySprite.visible = false;
+    
+    trophyText = game.add.text(game.world.width/4,game.world.height/2 , 'CONGRATULATIONS \n YOUR FIRST TROPHY', { fontSize: '32px', fill: '#000' });
+    //	Font style
+    trophyText.font = 'Arial Black';
+    trophyText.fontSize = 35;
+    trophyText.fontWeight = 'bold';
+
+    //	Stroke color and thickness
+    trophyText.stroke = '#000000';
+    trophyText.strokeThickness = 6;
+    trophyText.fill = '#ff0000';
+    trophyText.visible = false;
+    
+    // How TO Play Text
+    howToPlayText = game.add.text(game.world.width/4,game.world.height/4 , ' Left: To move cart left \n Right: To move cart right \n W: Love It \n A: Like It \n S: Neutral \n D: Hate It', { fontSize: '32px', fill: '#000' });
+    //	Font style
+    howToPlayText.font = 'Arial Black';
+    howToPlayText.fontSize = 35;
+    howToPlayText.fontWeight = 'bold';
+
+    //	Stroke color and thickness
+    howToPlayText.stroke = '#000000';
+    howToPlayText.strokeThickness = 6;
+    howToPlayText.fill = '#ff0000';
+    howToPlayText.visible = true;
+    
+    //  Create our Timer
+    timer = game.time.create(false);
+
+    //  Set a TimerEvent to occur after 2 seconds
+    timer.loop(3000, removeHowToText, this);
+
+    //  Start the timer running - this is important!
+    //  It won't start automatically, allowing you to hook it to button events and the like.
+    timer.start();
+    
     //  Our controls.
     cursors = game.input.keyboard.createCursorKeys(); 
     
@@ -246,7 +301,7 @@ function create() {
     loveCount = game.add.text(1090, 348, '', { fontSize: '32px', fill: '#000' });
     likeCount = game.add.text(1250,348 , '', { fontSize: '32px', fill: '#000' });
     neutralCount = game.add.text(1090, 475, '', { fontSize: '32px', fill: '#000' });
-    hateCount = game.add.text(1260, 475, '', { fontSize: '32px', fill: '#000' });
+    hateCount = game.add.text(1270, 475, '', { fontSize: '32px', fill: '#000' });
    //	Font style
     loveCount.font = 'Arial Black';
     loveCount.fontSize = 35;
@@ -255,7 +310,7 @@ function create() {
     //	Stroke color and thickness
     loveCount.stroke = '#000000';
     loveCount.strokeThickness = 6;
-    loveCount.fill = '#43d637';
+    loveCount.fill = '#ff0000';
     
     loveCount.font = 'Arial Black';
     loveCount.fontSize = 35;
@@ -264,7 +319,7 @@ function create() {
     //	Stroke color and thickness
     likeCount.stroke = '#000000';
     likeCount.strokeThickness = 6;
-    likeCount.fill = '#43d637';
+    likeCount.fill = '#ff0000';
     
     likeCount.font = 'Arial Black';
     likeCount.fontSize = 35;
@@ -273,7 +328,7 @@ function create() {
     //	Stroke color and thickness
     neutralCount.stroke = '#000000';
     neutralCount.strokeThickness = 6;
-    neutralCount.fill = '#43d637';
+    neutralCount.fill = '#ff0000';
     
     neutralCount.font = 'Arial Black';
     neutralCount.fontSize = 35;
@@ -282,7 +337,7 @@ function create() {
     //	Stroke color and thickness
     hateCount.stroke = '#000000';
     hateCount.strokeThickness = 6;
-    hateCount.fill = '#43d637';
+    hateCount.fill = '#ff0000';
     
     hateCount.font = 'Arial Black';
     hateCount.fontSize = 35;
@@ -355,20 +410,24 @@ function collectProduct (player, product) {
     {
         lovedProducts.push(name);
         loveCount.text = lovedProducts.length;
+        lovedItemsCount = lovedProducts.length;
     }
     else if (commentID == 1)
     {
         likedProducts.push(name);
         likeCount.text = likedProducts.length;
+        likedItemsCount = likedProducts.length;
     }
     else if (commentID == 2)
     {
         neutralProducts.push(name);
         neutralCount.text = neutralProducts.length;
+        neutralCount = neutralProducts.length;
     }
     else{
         hateProducts.push(name);
         hateCount.text = hateProducts.length;
+        hateItemsCount = hateProducts.length;
     } 
 
     // Overlay popup when user fills cart
@@ -402,7 +461,15 @@ function createStars() {
     var product = products.create(game.rnd.integerInRange(10, 550), 0, productName);
 
     //  Let gravity do its thing
-    product.body.gravity.y = 30;
+    product.body.gravity.y = 90;
+    if (productID > 5 && productID < 10)
+    {
+        product.body.gravity.y = 60;
+    }
+    else
+    {
+        product.body.gravity.y = 30;
+    }
     product.name = productID;
     productID = productID + 1;
 }
@@ -435,6 +502,10 @@ player.animations.add('right', [1], 10, true);
 commentID = 3;
 }
 
+function removeHowToText()
+{
+    howToPlayText.visible = false;
+}
 </script>
 
 
