@@ -2,17 +2,81 @@
 <html lang="en"> 
 <head> 
 	<meta charset="UTF-8" />
-    <title>SNAGIT- Tag Line</title>
+    <title> SnagIt! </title>
 	<script type="text/javascript" src="js/phaser.min.js"></script>
-    <style type="text/css">
-        body {
-            margin: 0;
-        }
-    </style>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  <style type="text/css">
+      body {
+          margin: 0;
+      }
+      #resultsModal {
+        text-align: center;
+      }
+  </style>
+
+
 </head>
+
 <body>
 
+<div class="modal" id="resultsModal" role="dialog">
+  <div class="modal-dialogue">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close close-button" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title"> Item Summary </h4>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+          <div class="col-md-4">
+            <img src="http://www.bagzone.co.uk/shop/s139-black-side.jpg" height="100" width="100" class="img-responsive center-block" />
+          </div>
+          <h3 class="item-title"> Gucci Bag </h3>
+          <h4 class="item-description"> “This Relic crossbody bag is the perfect size for all your daily essentials.” </h4>
+          <p> How much would you be willing to pay for this bag? </p>
+          <div class="col-md-6 col-md-offset-5" width="200">
+              <select class="form-control" id="exampleSelect1">
+                <option>$0</option>
+                <option>$10</option>
+                <option>$20</option>
+                <option>$30</option>
+                <option>$40</option>
+                <option>$50</option>
+              </select>
+          </div>
+          <div class="col-md-6 col-md-offset-5">
+            <p></p>
+            <p> What do you think about this bag? (Max 256 characters)</p>
+            <textarea class="form-control" maxlength="256" rows="3" id="comment"></textarea>
+          </div>
+        </div>
+        <div class="row">
+        </div>
+        <div class="row">
+        </div>
+        <div class="row">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default close-button" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script type="text/javascript">
+
+$(document).ready(function() {
+  var itemTitles = ["Relic Evie Crossbody Bag", "Rosetti Crossbody Bag", "LC Lauren Conrad Ring Convertible Crossbody Bag", "Rosetti This N' That t Crossbody Bag", "Apt. 9® Zoe Laser-Cut Convertible Dome Satchel", "Apt. 9® Zoe Pocket Crossbody Bag", "Tig II by Tignanello Emily Crossbody Bag", "Donna Sharp Hipster Montreal Quilted Patchwork Crossbody Bag", "REED Atlantique Convertible Mini Satchel", "Unionbay Geometric Studded Crossbody Bag", "Deluxity Annette Crossbody Bag", "T-Shirt & Jeans Patchwork Saddle Crossbody Bag", "Olivia Miller Neilla Tassel Saddle Crossbody Bag", "Candie's® Sabrina Crossbody Saddle Bag", "Rosetti Double-Time Straw Crossbody Bag "];
+  var itemDescriptions = ["This Relic crossbody bag is the perfect size for all your daily essentials.", "Give your look a touch of floral flair with this Rosetti crossbody bag.", "Showcase your sleek sense of style with this LC Lauren Conrad crossbody bag.", "Give your look a sporty touch with this Rosetti crossbody bag.", "This Apt. 9 domed satchel features laser-cut accents for a fashionable look.", "The ultimate bag for all your day-to-day outings, this Apt. 9 crossbody bag offer style and class.", "Keep your fashion up to date with this Tig II by Tignanello handbag","This Donna Sharp crossbody bag is perfect for all your day-to-day tasks. The quilted patchwork design lends a unique look. Transform any look with this edgy, trendy and fashionable bag.", "Give your full attention to this REED mini satchel for easy accessorizing.", "This trendy studded crossbody bag from Unionbay has room for all your daily essentials.", "This stylish crossbody by Deluxity features an eye-catching gold-tone medallion.","Carry your phone, lip balm and cash in this T-Shirt & Jeans saddle crossbody bag.", "Stay up to date with the trends carrying this Olivia Miller saddle bag.","This compact Candie's saddle bag offers hands-free style for your cash, keys and phone.","Give yourself a fashion-forward look with this Rosetti crossbody bag."];
+
+  $('#resultsModal').hide();
+  $('.close-button').on("click", function(){
+    $('#resultsModal').hide();
+  });
+});
 
 var game = new Phaser.Game(800, 600, Phaser.AUTO, '', { preload: preload, create: create, update: update });
 
@@ -54,7 +118,6 @@ function create() {
 
     //  We will enable physics for any object that is created in this group
     platforms.enableBody = true;
-
     // Here we create the ground.
     var ground = platforms.create(0, game.world.height - 64, 'ground');
 
@@ -164,9 +227,16 @@ function collectStar (player, star) {
     score += 1;
     scoreText.text = 'Score: ' + score;
 
+    // Overlay popup when user fills cart
+    if (score === 1){
+      $('#resultsModal').show();
+    }
 }
 
 </script>
 
+
+  <!-- Latest compiled and minified JavaScript -->
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
 </body>
 </html>
